@@ -1,0 +1,535 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Eyesana&#39;s notes">
+    <title>SpringMVC 消息转换器 - Eyesana&#39;s notes</title>
+    <meta name="author" content="Eyesana">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n简介\n 待完善\n\nSpring 在处理请求时，由合适的消息转换器对象将请求报文绑定为方法中的形参对象  ，在这里，同一个对象就有可能出现多种不同的消息形式，比如 json 和 xml。\n同样，当响应请求时，消息转换器将 controller 中的方法的返回值转换为 不同的消息形式  ，比如 json 和 xml，再通过输出流的方式响应给页面。\n\n\n\n官方文档Web (spring.io)\nSpring MVC 使用 HttpMessageConverter 接口来转换 HTTP 请求和响应。 合理的默认设置是开箱即用的。 例如，如果可用的话，对象可以 (通过使用Jackson库) 自动转换为 JSON 或 （通过使用 Jackson XML 扩展，或者通过使用 JAXB）转换为 XML。 默认情况下，字符串以 UTF-8 编码。\n如果需要添加或自定义转换器，可以使用 Spring Boot 的 HttpMessageConverters 类，如下所示：\n123456789101112131415import org.springframework.boot.autoconfigure.http.HttpMessageConverters;import org.springframework.context.annotation.Bean;import org.springframework.context.annotation.Configuration;import org.springframework.http.converter.HttpMessageConverter;@Configuration(proxyBeanMethods = false)public class MyHttpMessageConvertersConfiguration &#123;    @Bean    public HttpMessageConverters customConverters() &#123;        HttpMessageConverter&lt;?&gt; additional = new AdditionalHttpMessageConverter();        HttpMessageConverter&lt;?&gt; another = new AnotherHttpMessageConverter();        return new HttpMessageConverters(additional, another);    &#125;&#125;\n\n上下文 context 中存在的任何 HttpMessageConverter bean 都会添加到转换器列表中。您也可以以相同的方式覆盖默认转换器。\n默认消息转换器\nByteArrayHttpMessageConverter：转换为字节数组\n\nStringHttpMessageConverter：转换为字符串\n\nResourceHttpMessageConverter ：将任何类型的八位字节流转换为 org.springframework.core.io.Resource\n\nSourceHttpMessageConverter ：转换为 javax.xml.transform.Source \n\nFormHttpMessageConverter：将表单数据转换为 MultiValueMap&lt;String, String&gt;\n\nJaxb2RootElementHttpMessageConverter– 将 Java 对象转换为 XML 或从 XML 转换成 Java 对象（仅当 JAXB2 出现在类路径中时才被添加到默认转换器）\n\nMappingJackson2HttpMessageConverter：转换为 JSON（仅当 Jackson 2 在类路径中时才添加）\n\nMappingJacksonHttpMessageConverter：转换为 JSON（仅当 Jackson 在类路径中时才添加）\n\nAtomFeedHttpMessageConverter：转换为 Atom feeds (仅当 Rome 在类路径中时才添加)\n\nRssChannelHttpMessageConverter：转换为  RSS feeds (仅当 Rome 在类路径中时才添加)\n\n\n消息转换器的调用，都是在 RequestResponseBodyMethodProcessor 类中完成的。它实现了HandlerMethodArgumentResolver 和 HandlerMethodReturnValueHandler 两个接口，分别实现了处理参数和处理返回值的方法。\n而要调用这些消息转换器，需要在方法上加上@RequestBody 和 @ResponseBody  注解\n自定义消息转换器\n 待完善\n\n使用新的消息转换器在自定义的配置类中重写 extendMessageConverters 方法，该方法的参数是 SpringMVC 目前提供的 HttpMessageConverter 的列表，只需要将自定义的消息转换器添加到这个列表中。如果希望优先使用自定义的消息转换器，则添加到下标更小的位置中去。\n123456789101112131415161718import com.xxx.xxx.JacksonObjectMapper;@Configurationpublic class WebMvcConfig implements WebMvcConfigurer &#123;    @Override    public void extendMessageConverters(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters) &#123;        // 创建消息转换器对象        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();        // 设置对象转换器，低层使用 Jackson 将 Java 对象转为 Json        messageConverter.setObjectMapper(new JacksonObjectMapper());        // 将上面的消息转换器对象追加到mvc框架的转换器集合中        converters.add(0, messageConverter);    &#125;&#125;\n\n\n\n参考SpringBoot 消息转换器 HttpMessageConverter - hongdada - 博客园 (cnblogs.com)\nHttp Message Converters with the Spring Framework | Baeldung\nspringMVC的消息转换器（Message Converter） - 简书 (jianshu.com)\n","dateCreated":"2022-08-07T23:27:19+08:00","dateModified":"2022-09-18T20:18:16+08:00","datePublished":"2022-08-07T23:27:19+08:00","description":"\n\n简介\n 待完善\n\nSpring 在处理请求时，由合适的消息转换器对象将请求报文绑定为方法中的形参对象  ，在这里，同一个对象就有可能出现多种不同的消息形式，比如 json 和 xml。\n同样，当响应请求时，消息转换器将 controller 中的方法的返回值转换为 不同的消息形式  ，比如 json 和 xml，再通过输出流的方式响应给页面。\n","headline":"SpringMVC 消息转换器","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/3916690307/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/3916690307/","keywords":"Web, 待完善, Springboot, SpringMVC"}</script>
+    <meta name="description" content="简介  待完善  Spring 在处理请求时，由合适的消息转换器对象将请求报文绑定为方法中的形参对象  ，在这里，同一个对象就有可能出现多种不同的消息形式，比如 json 和 xml。 同样，当响应请求时，消息转换器将 controller 中的方法的返回值转换为 不同的消息形式  ，比如 json 和 xml，再通过输出流的方式响应给页面。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="SpringMVC 消息转换器">
+<meta property="og:url" content="https://beeyesana.github.io/posts/3916690307/index.html">
+<meta property="og:site_name" content="Eyesana&#39;s notes">
+<meta property="og:description" content="简介  待完善  Spring 在处理请求时，由合适的消息转换器对象将请求报文绑定为方法中的形参对象  ，在这里，同一个对象就有可能出现多种不同的消息形式，比如 json 和 xml。 同样，当响应请求时，消息转换器将 controller 中的方法的返回值转换为 不同的消息形式  ，比如 json 和 xml，再通过输出流的方式响应给页面。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images2018.cnblogs.com/blog/443934/201806/443934-20180601141959525-635695197.png">
+<meta property="article:published_time" content="2022-08-07T15:27:19.000Z">
+<meta property="article:modified_time" content="2022-09-18T12:18:16.487Z">
+<meta property="article:author" content="Eyesana">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="待完善">
+<meta property="article:tag" content="Springboot">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images2018.cnblogs.com/blog/443934/201806/443934-20180601141959525-635695197.png">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://beeyesana.github.io/assets/images/avatar.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-lezd4dfl72yb7za63iypiu14nmsvs9ion4gakbqiag9fydsqlhfn71azdulv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="5">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Eyesana&#39;s notes
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="5">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Eyesana</h4>
+                
+                    <h5 class="sidebar-profile-bio"></h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/BeEyesana"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://space.bilibili.com/2511182"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Bilibili"
+                        >
+                        <i class="sidebar-button-icon fab fa-bilibili" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Bilibili</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://leetcode.cn/u/eyesa/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LeetCode"
+                        >
+                        <i class="sidebar-button-icon " aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LeetCode</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="5"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            SpringMVC 消息转换器
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-07T23:27:19+08:00">
+	
+		    8月 07, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Spring/">Spring</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-text">官方文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%BB%98%E8%AE%A4%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">默认消息转换器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">自定义消息转换器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B0%E7%9A%84%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">使用新的消息转换器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><ul>
+<li><input disabled="" type="checkbox"> 待完善</li>
+</ul>
+<p>Spring 在处理请求时，由合适的消息转换器对象将<strong>请求报文</strong>绑定为方法中的<strong>形参对象</strong>  ，在这里，同一个对象就有可能出现多种不同的消息形式，比如 json 和 xml。</p>
+<p>同样，当响应请求时，消息转换器将 controller 中的<strong>方法的返回值</strong>转换为 <strong>不同的消息形式</strong>  ，比如 json 和 xml，再通过输出流的方式响应给页面。</p>
+<p><img src="https://images2018.cnblogs.com/blog/443934/201806/443934-20180601141959525-635695197.png" alt="img"></p>
+<span id="more"></span>
+
+<h1 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h1><p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.servlet.spring-mvc.message-converters">Web (spring.io)</a></p>
+<p>Spring MVC 使用 <code>HttpMessageConverter</code> 接口来转换 HTTP 请求和响应。 合理的默认设置是开箱即用的。 例如，如果可用的话，对象可以 (通过使用Jackson库) 自动转换为 JSON 或 （通过使用 Jackson XML 扩展，或者通过使用 JAXB）转换为 XML。 默认情况下，字符串以 UTF-8 编码。</p>
+<p>如果需要添加或自定义转换器，可以使用 Spring Boot 的 <code>HttpMessageConverters</code> 类，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.http.HttpMessageConverters;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.converter.HttpMessageConverter;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyHttpMessageConvertersConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> HttpMessageConverters <span class="title function_">customConverters</span><span class="params">()</span> &#123;</span><br><span class="line">        HttpMessageConverter&lt;?&gt; additional = <span class="keyword">new</span> <span class="title class_">AdditionalHttpMessageConverter</span>();</span><br><span class="line">        HttpMessageConverter&lt;?&gt; another = <span class="keyword">new</span> <span class="title class_">AnotherHttpMessageConverter</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">HttpMessageConverters</span>(additional, another);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上下文 context 中存在的任何 HttpMessageConverter bean 都会添加到转换器列表中。您也可以以相同的方式覆盖默认转换器。</p>
+<h1 id="默认消息转换器"><a href="#默认消息转换器" class="headerlink" title="默认消息转换器"></a>默认消息转换器</h1><ul>
+<li><p><code>ByteArrayHttpMessageConverter</code>：转换为字节数组</p>
+</li>
+<li><p><code>StringHttpMessageConverter</code>：转换为字符串</p>
+</li>
+<li><p><code>ResourceHttpMessageConverter </code>：将任何类型的八位字节流转换为 <code>org.springframework.core.io.Resource</code></p>
+</li>
+<li><p><code>SourceHttpMessageConverter </code>：转换为 <code>javax.xml.transform.Source</code> </p>
+</li>
+<li><p><code>FormHttpMessageConverter</code>：将表单数据转换为 <code>MultiValueMap&lt;String, String&gt;</code></p>
+</li>
+<li><p><code>Jaxb2RootElementHttpMessageConverter</code>– 将 Java 对象转换为 XML 或从 XML 转换成 Java 对象（仅当 JAXB2 出现在类路径中时才被添加到默认转换器）</p>
+</li>
+<li><p><code>MappingJackson2HttpMessageConverter</code>：转换为 JSON（仅当 <code>Jackson 2</code> 在类路径中时才添加）</p>
+</li>
+<li><p><code>MappingJacksonHttpMessageConverter</code>：转换为 JSON（仅当 <code>Jackson </code>在类路径中时才添加）</p>
+</li>
+<li><p><code>AtomFeedHttpMessageConverter</code>：转换为 Atom feeds (仅当 Rome 在类路径中时才添加)</p>
+</li>
+<li><p><code>RssChannelHttpMessageConverter</code>：转换为  RSS feeds (仅当 Rome 在类路径中时才添加)</p>
+</li>
+</ul>
+<p>消息转换器的调用，都是在 <code>RequestResponseBodyMethodProcessor </code>类中完成的。它实现了<code>HandlerMethodArgumentResolver</code> 和 <code>HandlerMethodReturnValueHandler </code>两个接口，分别实现了<strong>处理参数</strong>和<strong>处理返回值</strong>的方法。</p>
+<p>而要调用这些消息转换器，需要在方法上加上<code>@RequestBody</code> 和 <code>@ResponseBody</code>  注解</p>
+<h1 id="自定义消息转换器"><a href="#自定义消息转换器" class="headerlink" title="自定义消息转换器"></a>自定义消息转换器</h1><ul>
+<li><input disabled="" type="checkbox"> 待完善</li>
+</ul>
+<h1 id="使用新的消息转换器"><a href="#使用新的消息转换器" class="headerlink" title="使用新的消息转换器"></a>使用新的消息转换器</h1><p>在自定义的配置类中重写 <code>extendMessageConverters</code> 方法，该方法的参数是 SpringMVC 目前提供的 <code>HttpMessageConverter</code> 的列表，只需要将自定义的消息转换器添加到这个列表中。如果希望优先使用自定义的消息转换器，则添加到下标更小的位置中去。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.xxx.xxx.JacksonObjectMapper;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">extendMessageConverters</span><span class="params">(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建消息转换器对象</span></span><br><span class="line">        <span class="type">MappingJackson2HttpMessageConverter</span> <span class="variable">messageConverter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MappingJackson2HttpMessageConverter</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置对象转换器，低层使用 Jackson 将 Java 对象转为 Json</span></span><br><span class="line">        messageConverter.setObjectMapper(<span class="keyword">new</span> <span class="title class_">JacksonObjectMapper</span>());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将上面的消息转换器对象追加到mvc框架的转换器集合中</span></span><br><span class="line">        converters.add(<span class="number">0</span>, messageConverter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hongdada/p/9120899.html">SpringBoot 消息转换器 HttpMessageConverter - hongdada - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.baeldung.com/spring-httpmessageconverter-rest">Http Message Converters with the Spring Framework | Baeldung</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2f633cb817f5">springMVC的消息转换器（Message Converter） - 简书 (jianshu.com)</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/SpringMVC/" rel="tag">SpringMVC</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/Springboot/" rel="tag">Springboot</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/Web/" rel="tag">Web</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/%E5%BE%85%E5%AE%8C%E5%96%84/" rel="tag">待完善</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3508528482/"
+                    data-tooltip="Springboot 对象映射器"
+                    aria-label="上一篇: Springboot 对象映射器"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/2464522539/"
+                    data-tooltip="Springboot 静态资源映射"
+                    aria-label="下一篇: Springboot 静态资源映射"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 Eyesana. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3508528482/"
+                    data-tooltip="Springboot 对象映射器"
+                    aria-label="上一篇: Springboot 对象映射器"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/2464522539/"
+                    data-tooltip="Springboot 静态资源映射"
+                    aria-label="下一篇: Springboot 静态资源映射"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Eyesana</h4>
+        
+            <div id="about-card-bio"></div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-bvtwxu29a1tjks0lgljp6jzi21cgvsguhclbsyyftdvzl0xfannlswvg2old.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

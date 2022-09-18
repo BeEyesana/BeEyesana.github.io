@@ -1,0 +1,566 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Eyesana&#39;s notes">
+    <title>Java 的 ACM 输入输出 - Eyesana&#39;s notes</title>
+    <meta name="author" content="Eyesana">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n\n\n输入 使用 Scanner  类来获取输入\n1import java.util.Scanner; // 导包\n\n创建 Scanner  对象要传入 InputStream 对象 System.in\n1Scanner sc = new Scanner(System.in); // 新建对象\n\nScanner 类默认的分隔符就是空格\n使用通常使用 while(sc.hasNextLine())  或者  while(sc.hasNext()) 来读取多行输入数据\n\nhasNext()：判断扫描器中当前扫描位置后是否还存在下一段。\nhasNextLine()：如果在此扫描器的输入中存在另一行，则返回 true\n\n12345678910public static void main(String[] args) &#123;    // 从键盘接收数据    Scanner sc = new Scanner(System.in);    // 判断是否还有输入    if (sc.hasNextLine()) &#123;        // 获取数据    &#125;    scan.close();&#125;\n\n\n\n获取数据使用 sc.next() 和 sc.nextLine() 方法，它们的返回值都是 String\nnext() 与 nextLine() 区别：\n\nnext()\n\n\n一定要读取到有效字符后才可以结束输入\n对输入有效字符之前遇到的空格，next() 方法会自动将其去掉\n只有输入有效字符后才将其后面输入的空格作为分隔符或者结束符\nnext() 不能得到带有空格的字符串。\n\n\nnextLine()\n\n\n以 Enter 为结束符,也就是说 nextLine() 方法返回的是输入回车之前的所有字符。\n可以获得空格\n\n总结：next() 碰到空格、换行都结束输入；而 nextLine() 只以换行（回车）结束输入。\n输入基本数据类型12345678910111213141516171819202122232425while (sc.hasNextLine()) &#123;    // 输入整型    int a = sc.nextInt();    // 输入单精度浮点型    double b = sc.nextDouble();    // 输入双精度浮点型    float c = sc.nextFloat();    // 输入 long    long d = sc.nextLong();    // 输入 short    short e = sc.nextShort();    // 输入字符    char f = sc.nextLine().charAt(1);    // 输入布尔型    boolean g = sc.nextBoolean();    // 输入 byte    byte h = sc.nextByte();&#125;\n\n\n\n输入数组通常需要接收数组的长度\n12345678while (sc.hasNextLine()) &#123;    int n = sc.nextInt();    int[] array = new int[n];        for (int i = 0; i &lt; n; i++) &#123;        array[i] = sc.nextInt();    &#125;&#125;\n\n输入字符串12345while (sc.hasNextLine()) &#123;    // 注意这两个方法的区别    String s1 = sc.nextLine();    String ss2 = sc.next();&#125;\n\n\n\n输出输出使用 System.out.print() 等方法\nprint()、println() 和 printf() 之间的区别\n\nprint() ：打印数据。\nprintln()：打印数据，并且使光标移动到下一行的开头。\nprintf()：打印格式化的数据（类似于C &#x2F; C ++编程中的 printf ）。\n\n格式化输出通过使用占位符 %?，printf() 可以把后面的参数格式化成指定格式\n\n\n\n占位符\n说明\n\n\n\n%d\n格式化输出整数\n\n\n%x\n格式化输出十六进制整数\n\n\n%f\n格式化输出浮点数\n\n\n%e\n格式化输出科学计数法表示的浮点数\n\n\n%s\n格式化字符串\n\n\n其他参考ACM模式的输入输出处理（java篇） - 简书 (jianshu.com)\nJava刷ACM模式的各类输入输出构造 - 知乎 (zhihu.com)\n","dateCreated":"2022-08-31T19:40:03+08:00","dateModified":"2022-09-01T20:45:25+08:00","datePublished":"2022-08-31T19:40:03+08:00","description":"","headline":"Java 的 ACM 输入输出","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/1197965336/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/1197965336/","keywords":"Java, 算法"}</script>
+    <meta property="og:type" content="blog">
+<meta property="og:title" content="Java 的 ACM 输入输出">
+<meta property="og:url" content="https://beeyesana.github.io/posts/1197965336/index.html">
+<meta property="og:site_name" content="Eyesana&#39;s notes">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-31T11:40:03.000Z">
+<meta property="article:modified_time" content="2022-09-01T12:45:25.895Z">
+<meta property="article:author" content="Eyesana">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://beeyesana.github.io/assets/images/avatar.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-lezd4dfl72yb7za63iypiu14nmsvs9ion4gakbqiag9fydsqlhfn71azdulv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="5">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Eyesana&#39;s notes
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="5">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Eyesana</h4>
+                
+                    <h5 class="sidebar-profile-bio"></h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/BeEyesana"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://space.bilibili.com/2511182"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Bilibili"
+                        >
+                        <i class="sidebar-button-icon fab fa-bilibili" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Bilibili</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://leetcode.cn/u/eyesa/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LeetCode"
+                        >
+                        <i class="sidebar-button-icon " aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LeetCode</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="5"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Java 的 ACM 输入输出
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-31T19:40:03+08:00">
+	
+		    8月 31, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Java/">Java</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BE%93%E5%85%A5"><span class="toc-text">输入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-text">使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">输入基本数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%95%B0%E7%BB%84"><span class="toc-text">输入数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-text">输入字符串</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BE%93%E5%87%BA"><span class="toc-text">输出</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E8%BE%93%E5%87%BA"><span class="toc-text">格式化输出</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%8F%82%E8%80%83"><span class="toc-text">其他参考</span></a></li></ol>
+
+<span id="more"></span>
+
+<h1 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h1><p> 使用 <code>Scanner </code> 类来获取输入</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Scanner; <span class="comment">// 导包</span></span><br></pre></td></tr></table></figure>
+
+<p>创建 <code>Scanner </code> 对象要传入 <code>InputStream</code> 对象 <code>System.in</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Scanner</span> <span class="variable">sc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in); <span class="comment">// 新建对象</span></span><br></pre></td></tr></table></figure>
+
+<p>Scanner 类默认的分隔符就是空格</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>通常使用 <code>while(sc.hasNextLine())</code>  或者  <code>while(sc.hasNext())</code> 来读取多行输入数据</p>
+<ul>
+<li><code>hasNext()</code>：判断扫描器中当前扫描位置后是否还存在下一段。</li>
+<li><code>hasNextLine()</code>：如果在此扫描器的输入中存在另一行，则返回 true</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    <span class="comment">// 从键盘接收数据</span></span><br><span class="line">    <span class="type">Scanner</span> <span class="variable">sc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断是否还有输入</span></span><br><span class="line">    <span class="keyword">if</span> (sc.hasNextLine()) &#123;</span><br><span class="line">        <span class="comment">// 获取数据</span></span><br><span class="line">    &#125;</span><br><span class="line">    scan.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>获取数据使用 <code>sc.next()</code> 和 <code>sc.nextLine()</code> 方法，它们的返回值都是 <code>String</code></p>
+<p><code>next()</code> 与 <code>nextLine() </code>区别：</p>
+<ol>
+<li><code>next()</code></li>
+</ol>
+<ul>
+<li>一定要读取到<strong>有效字符</strong>后才可以结束输入</li>
+<li>对输入有效字符之前遇到的<strong>空格</strong>，<code>next()</code> 方法会<strong>自动将其去掉</strong></li>
+<li>只有输入<strong>有效字符后</strong>才将其后面<strong>输入的空格</strong>作为<strong>分隔符</strong>或者<strong>结束符</strong></li>
+<li><code>next()</code> <strong>不能</strong>得到<strong>带有空格的字符串</strong>。</li>
+</ul>
+<ol start="2">
+<li><code>nextLine()</code></li>
+</ol>
+<ul>
+<li>以 <code>Enter</code> 为结束符,也就是说 <code>nextLine()</code> 方法返回的是输入回车之前的所有字符。</li>
+<li>可以获得空格</li>
+</ul>
+<p>总结：<code>next()</code> 碰到<strong>空格</strong>、<strong>换行</strong>都结束输入；而 <code>nextLine()</code> 只以<strong>换行（回车）</strong>结束输入。</p>
+<h2 id="输入基本数据类型"><a href="#输入基本数据类型" class="headerlink" title="输入基本数据类型"></a>输入基本数据类型</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (sc.hasNextLine()) &#123;</span><br><span class="line">    <span class="comment">// 输入整型</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> sc.nextInt();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入单精度浮点型</span></span><br><span class="line">    <span class="type">double</span> <span class="variable">b</span> <span class="operator">=</span> sc.nextDouble();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入双精度浮点型</span></span><br><span class="line">    <span class="type">float</span> <span class="variable">c</span> <span class="operator">=</span> sc.nextFloat();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入 long</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">d</span> <span class="operator">=</span> sc.nextLong();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入 short</span></span><br><span class="line">    <span class="type">short</span> <span class="variable">e</span> <span class="operator">=</span> sc.nextShort();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入字符</span></span><br><span class="line">    <span class="type">char</span> <span class="variable">f</span> <span class="operator">=</span> sc.nextLine().charAt(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入布尔型</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">g</span> <span class="operator">=</span> sc.nextBoolean();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入 byte</span></span><br><span class="line">    <span class="type">byte</span> <span class="variable">h</span> <span class="operator">=</span> sc.nextByte();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="输入数组"><a href="#输入数组" class="headerlink" title="输入数组"></a>输入数组</h2><p>通常需要接收数组的长度</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (sc.hasNextLine()) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> sc.nextInt();</span><br><span class="line">    <span class="type">int</span>[] array = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        array[i] = sc.nextInt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="输入字符串"><a href="#输入字符串" class="headerlink" title="输入字符串"></a>输入字符串</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (sc.hasNextLine()) &#123;</span><br><span class="line">    <span class="comment">// 注意这两个方法的区别</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> sc.nextLine();</span><br><span class="line">    <span class="type">String</span> <span class="variable">ss2</span> <span class="operator">=</span> sc.next();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h1><p>输出使用 <code>System.out.print()</code> 等方法</p>
+<p><code>print()</code>、<code>println()</code> 和 <code>printf()</code> 之间的区别</p>
+<ul>
+<li><code>print() </code>：打印数据。</li>
+<li><code>println()</code>：打印数据，并且使光标移动到下一行的开头。</li>
+<li><code>printf()</code>：打印格式化的数据（类似于C &#x2F; C ++编程中的 <code>printf </code>）。</li>
+</ul>
+<h2 id="格式化输出"><a href="#格式化输出" class="headerlink" title="格式化输出"></a>格式化输出</h2><p>通过使用占位符 <code>%?</code>，<code>printf()</code> 可以把后面的参数格式化成指定格式</p>
+<table>
+<thead>
+<tr>
+<th align="left">占位符</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">%d</td>
+<td align="left">格式化输出整数</td>
+</tr>
+<tr>
+<td align="left">%x</td>
+<td align="left">格式化输出十六进制整数</td>
+</tr>
+<tr>
+<td align="left">%f</td>
+<td align="left">格式化输出浮点数</td>
+</tr>
+<tr>
+<td align="left">%e</td>
+<td align="left">格式化输出科学计数法表示的浮点数</td>
+</tr>
+<tr>
+<td align="left">%s</td>
+<td align="left">格式化字符串</td>
+</tr>
+</tbody></table>
+<h1 id="其他参考"><a href="#其他参考" class="headerlink" title="其他参考"></a>其他参考</h1><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/4be070789f7a">ACM模式的输入输出处理（java篇） - 简书 (jianshu.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/392440391">Java刷ACM模式的各类输入输出构造 - 知乎 (zhihu.com)</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/Java/" rel="tag">Java</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/28951409/"
+                    data-tooltip="一些编程技巧"
+                    aria-label="上一篇: 一些编程技巧"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3682569925/"
+                    data-tooltip="Spring 配置类"
+                    aria-label="下一篇: Spring 配置类"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 Eyesana. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/28951409/"
+                    data-tooltip="一些编程技巧"
+                    aria-label="上一篇: 一些编程技巧"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3682569925/"
+                    data-tooltip="Spring 配置类"
+                    aria-label="下一篇: Spring 配置类"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Eyesana</h4>
+        
+            <div id="about-card-bio"></div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-bvtwxu29a1tjks0lgljp6jzi21cgvsguhclbsyyftdvzl0xfannlswvg2old.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

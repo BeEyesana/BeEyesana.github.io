@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Eyesana&#39;s notes">
-    <title>分类: Spring - Eyesana&#39;s notes</title>
+    <title>归档: 2022/8 - Eyesana&#39;s notes</title>
     <meta name="author" content="Eyesana">
     
     
@@ -14,7 +14,7 @@
     <script type="application/ld+json">{}</script>
     <meta property="og:type" content="blog">
 <meta property="og:title" content="Eyesana&#39;s notes">
-<meta property="og:url" content="https://beeyesana.github.io/categories/Spring/index.html">
+<meta property="og:url" content="https://beeyesana.github.io/archives/2022/08/index.html">
 <meta property="og:site_name" content="Eyesana&#39;s notes">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="Eyesana">
@@ -248,6 +248,57 @@
                     
                         <a
                             class="link-unstyled"
+                            href="/posts/1197965336/"
+                            aria-label=": Java 的 ACM 输入输出"
+                        >
+                            Java 的 ACM 输入输出
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2022-08-31T19:40:03+08:00">
+	
+		    8月 31, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Java/">Java</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <!-- toc -->
+                    
+                        <a
+                            href="/posts/1197965336/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": Java 的 ACM 输入输出"
+                        >
+                            阅读全文
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
                             href="/posts/3682569925/"
                             aria-label=": Spring 配置类"
                         >
@@ -285,6 +336,119 @@
                             href="/posts/3682569925/"
                             class="postShorten-excerpt_link link"
                             aria-label=": Spring 配置类"
+                        >
+                            阅读全文
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
+                            href="/posts/1752722907/"
+                            aria-label=": 使用 ThreadLocal 类保存用户信息"
+                        >
+                            使用 ThreadLocal 类保存用户信息
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2022-08-07T23:30:37+08:00">
+	
+		    8月 07, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/%E5%85%B6%E4%BB%96/">其他</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <!-- toc -->
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>ThreadLocal 是一个关于创建线程局部变量的类。</p>
+<p>ThreadLocal 并不是一个线程，而是线程的局部变量。当使用 ThreadLocal 维护变量时，ThreadLocal 为<strong>每个使用该变量的线程</strong>提供<strong>独立的变量副本</strong>，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。<br>ThreadLocal 为每个线程提供单独一份存储空间，具有<strong>线程隔离</strong>的效果，只有在线程内才能获取到对应的值，线程外则不能访问。</p>
+                    
+                        <a
+                            href="/posts/1752722907/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": 使用 ThreadLocal 类保存用户信息"
+                        >
+                            阅读全文
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
+                            href="/posts/3092268236/"
+                            aria-label=": MyBatisPlus 公共字段自动填充"
+                        >
+                            MyBatisPlus 公共字段自动填充
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2022-08-07T23:29:19+08:00">
+	
+		    8月 07, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <!-- toc -->
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>实现步骤:</p>
+<ol>
+<li><p>在实体类的属性上加入 <code>@TableField</code> 注解，指定自动填充的策略 <code>fill</code></p>
+</li>
+<li><p>按照框架要求编写元数据对象处理器，在此类中统一为公共字段赋值，此类需要实现 <code>com.baomidou.mybatisplus.core.handlers.MetaObjectHandler</code> 接口</p>
+</li>
+</ol>
+                    
+                        <a
+                            href="/posts/3092268236/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": MyBatisPlus 公共字段自动填充"
                         >
                             阅读全文
                         </a>
@@ -474,23 +638,23 @@
                     
                         <a
                             class="link-unstyled"
-                            href="/posts/102107152/"
-                            aria-label=": Spring Cache"
+                            href="/posts/1706463495/"
+                            aria-label=": Nginx"
                         >
-                            Spring Cache
+                            Nginx
                         </a>
                     
                 </h1>
                 <div class="postShorten-meta">
-    <time datetime="2022-07-29T22:06:48+08:00">
+    <time datetime="2022-08-07T13:27:30+08:00">
 	
-		    7月 29, 2022
+		    8月 07, 2022
     	
     </time>
     
         <span>发布在 </span>
         
-    <a class="category-link" href="/categories/Spring/">Spring</a>
+    <a class="category-link" href="/categories/Web/">Web</a>
 
 
     
@@ -501,17 +665,73 @@
                 <div class="postShorten-excerpt">
                     <!-- toc -->
 
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Spring Cache 是一个框架， 它实现了基于注解的缓存功能，只需要简单地加一个注解，就能实现缓存功能。</p>
-<p>Spring Cache 提供了一层抽象接口， 底层可以切换不同的 cache 实现。具体就是通过 <code>CacheManager</code> 接口来统一不同的缓存技术。</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Nginx 是一款轻量级的 Web 服务器、反向代理服务器，它的内存占用少，启动快，高并发能力强，在互联网项目中广泛应用。</p>
                     
                         <a
-                            href="/posts/102107152/"
+                            href="/posts/1706463495/"
                             class="postShorten-excerpt_link link"
-                            aria-label=": Spring Cache"
+                            aria-label=": Nginx"
                         >
                             阅读全文
                         </a>
                         
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-bottom">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
+                            href="/posts/236125151/"
+                            aria-label=": 一些MySQL命令"
+                        >
+                            一些MySQL命令
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2022-08-06T23:19:35+08:00">
+	
+		    8月 06, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-content">
+                    
+                    
+                        
+
+
+                    
+                    
+                        <p>
+                            <a
+                                href="/posts/236125151/#post-footer"
+                                class="postShorten-excerpt_link link"
+                                aria-label=""
+                            >
+                                评论和共享
+                            </a>
+                        </p>
                     
                 </div>
             

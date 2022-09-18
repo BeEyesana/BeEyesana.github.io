@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Eyesana&#39;s notes">
+    <title>Spring 配置类 - Eyesana&#39;s notes</title>
+    <meta name="author" content="Eyesana">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n简介SpringBoot 推荐使用 Java 配置完全代替 XML 配置，Java 配置是通过 @Configration 和 @Bean 注解实现的。二者作用如下：\n\n@Configration 注解：声明当前类是一个配置类，相当于 Spring 中的一个 XML 文件\n@Bean 注解：作用在方法上，声明当前方法的返回值是一个 Bean\n\n\n\n配置类的加载Spring 容器在启动的时候会去扫描 @Configuration，并将相关的类进行加载\n使用方式\n在类上注明 @Configuration\n在方法上注明 @Bean，在方法里声明一个所需要的 Bean 对象，注入该 Bean 的属性，最后返回该对象，交给 Spring 容器管理。需要使用该 Bean 的时候可以使用 @Autowired 自动注入\n\n参考SpringBoot 配置类 @Configuration和@Bean的使用_一棵栗子树的博客-CSDN博客_spring 配置类如何使用\nSpringBoot启动配置类（一）【@Configuration和@Bean用法】_云哥Y的博客-CSDN博客_springboot启动类配置\nSpringBoot启动配置类（二）【@Configuration注解的配置类如何被加载到？】_云哥Y的博客-CSDN博客\n真懂Spring的@Configuration配置类？你可能自我感觉太良好-阿里云开发者社区 (aliyun.com)\n","dateCreated":"2022-08-17T20:47:23+08:00","dateModified":"2022-08-17T23:52:24+08:00","datePublished":"2022-08-17T20:47:23+08:00","description":"\n\n简介SpringBoot 推荐使用 Java 配置完全代替 XML 配置，Java 配置是通过 @Configration 和 @Bean 注解实现的。二者作用如下：\n\n@Configration 注解：声明当前类是一个配置类，相当于 Spring 中的一个 XML 文件\n@Bean 注解：作用在方法上，声明当前方法的返回值是一个 Bean\n","headline":"Spring 配置类","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/3682569925/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/3682569925/","keywords":"Spring, 配置类"}</script>
+    <meta name="description" content="简介SpringBoot 推荐使用 Java 配置完全代替 XML 配置，Java 配置是通过 @Configration 和 @Bean 注解实现的。二者作用如下：  @Configration 注解：声明当前类是一个配置类，相当于 Spring 中的一个 XML 文件 @Bean 注解：作用在方法上，声明当前方法的返回值是一个 Bean">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Spring 配置类">
+<meta property="og:url" content="https://beeyesana.github.io/posts/3682569925/index.html">
+<meta property="og:site_name" content="Eyesana&#39;s notes">
+<meta property="og:description" content="简介SpringBoot 推荐使用 Java 配置完全代替 XML 配置，Java 配置是通过 @Configration 和 @Bean 注解实现的。二者作用如下：  @Configration 注解：声明当前类是一个配置类，相当于 Spring 中的一个 XML 文件 @Bean 注解：作用在方法上，声明当前方法的返回值是一个 Bean">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-17T12:47:23.000Z">
+<meta property="article:modified_time" content="2022-08-17T15:52:24.893Z">
+<meta property="article:author" content="Eyesana">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="配置类">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://beeyesana.github.io/assets/images/avatar.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-lezd4dfl72yb7za63iypiu14nmsvs9ion4gakbqiag9fydsqlhfn71azdulv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="5">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Eyesana&#39;s notes
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="5">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Eyesana</h4>
+                
+                    <h5 class="sidebar-profile-bio"></h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/BeEyesana"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://space.bilibili.com/2511182"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Bilibili"
+                        >
+                        <i class="sidebar-button-icon fab fa-bilibili" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Bilibili</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://leetcode.cn/u/eyesa/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LeetCode"
+                        >
+                        <i class="sidebar-button-icon " aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LeetCode</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="5"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Spring 配置类
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-17T20:47:23+08:00">
+	
+		    8月 17, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Spring/">Spring</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD"><span class="toc-text">配置类的加载</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-text">使用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>SpringBoot 推荐使用 Java 配置完全代替 XML 配置，Java 配置是通过 <code>@Configration</code> 和 <code>@Bean</code> 注解实现的。二者作用如下：</p>
+<ul>
+<li>@Configration 注解：声明当前类是一个配置类，相当于 Spring 中的一个 XML 文件</li>
+<li>@Bean 注解：作用在方法上，声明当前方法的返回值是一个 Bean</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="配置类的加载"><a href="#配置类的加载" class="headerlink" title="配置类的加载"></a>配置类的加载</h1><p>Spring 容器在启动的时候会去扫描 <code>@Configuration</code>，并将相关的类进行加载</p>
+<h1 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h1><ol>
+<li>在类上注明 <code>@Configuration</code></li>
+<li>在方法上注明 <code>@Bean</code>，在方法里声明一个所需要的 Bean 对象，注入该 Bean 的属性，最后返回该对象，交给 Spring 容器管理。需要使用该 Bean 的时候可以使用 <code>@Autowired</code> 自动注入</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/flyconley/article/details/115671809">SpringBoot 配置类 @Configuration和@Bean的使用_一棵栗子树的博客-CSDN博客_spring 配置类如何使用</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/fu123123fu/article/details/95758381">SpringBoot启动配置类（一）【@Configuration和@Bean用法】_云哥Y的博客-CSDN博客_springboot启动类配置</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/fu123123fu/article/details/95762622">SpringBoot启动配置类（二）【@Configuration注解的配置类如何被加载到？】_云哥Y的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/767204">真懂Spring的@Configuration配置类？你可能自我感觉太良好-阿里云开发者社区 (aliyun.com)</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/Spring/" rel="tag">Spring</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/%E9%85%8D%E7%BD%AE%E7%B1%BB/" rel="tag">配置类</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1197965336/"
+                    data-tooltip="Java 的 ACM 输入输出"
+                    aria-label="上一篇: Java 的 ACM 输入输出"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1752722907/"
+                    data-tooltip="使用 ThreadLocal 类保存用户信息"
+                    aria-label="下一篇: 使用 ThreadLocal 类保存用户信息"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 Eyesana. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1197965336/"
+                    data-tooltip="Java 的 ACM 输入输出"
+                    aria-label="上一篇: Java 的 ACM 输入输出"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1752722907/"
+                    data-tooltip="使用 ThreadLocal 类保存用户信息"
+                    aria-label="下一篇: 使用 ThreadLocal 类保存用户信息"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Eyesana</h4>
+        
+            <div id="about-card-bio"></div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-bvtwxu29a1tjks0lgljp6jzi21cgvsguhclbsyyftdvzl0xfannlswvg2old.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

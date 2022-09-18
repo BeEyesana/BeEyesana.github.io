@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Eyesana&#39;s notes">
+    <title>Springboot 静态资源映射 - Eyesana&#39;s notes</title>
+    <meta name="author" content="Eyesana">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n简介\n静态内容（静态资源）：指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等。\n\n动态内容（动态资源）：指在不同请求中访问到的数据不相同的动态内容。例如：网站中的文件（asp、jsp、php、perl、cgi）、API接口、数据库交互请求等。\n\n\n\n\n官方文档Web (spring.io)\n默认情况下，Spring Boot 从类路径中名为 /static（或 /public 或 /resources 或 /META-INF/resources）的目录或 ServletContext  的根目录中提供静态内容。它使用来自 Spring MVC 的 ResourceHttpRequestHandler，因此您可以通过添加自己的 WebMvcConfigurer 并重写 addResourceHandlers 方法来修改该行为。\n在独立的 Web 应用程序中，容器中的默认 servlet 未启用。可以使用 server.servlet.register-default-servlet 属性启用它。\n默认 servlet 充当后备，如果 Spring 决定不处理它，则从 ServletContext 的根提供内容。大多数时候，这不会发生（除非你修改了默认的 MVC 配置），因为 Spring 总是可以通过 DispatcherServlet 处理请求。\n默认情况下，资源映射到 /**，但您可以使用 spring.mvc.static-path-pattern 属性对其进行调整。例如，将所有资源重定位到 /resources/** 可以如下实现：\n\nyaml：\n\n123spring:\tmvc:\t\tstatic-path-pattern: &quot;/resources/**&quot;\n\n\nproperties：\n\n1spring.mvc.static-path-pattern=/resources/**\n\n您还可以使用 spring.web.resources.static-locations 属性自定义静态资源位置（用目录位置列表替换默认值）。 根 servlet 上下文路径 “/” 也会自动添加为位置。\n除了前面提到的“标准”静态资源位置之外，还为 Webjars 内容做了一个特殊情况。 任何具有 /webjars/** 路径的资源如果以 Webjars 格式打包，则从 jar 文件中提供。\n默认静态资源映射规则SpringBoot 默认将 &#39;url:port/**&#39; 映射到以下目录。Spring Boot 默认会一依次从static、 public、resources 和 里面找是否存在相应的资源，如果有则直接返回。\n1234classpath:/staticclasspath:/publicclasspath:/resourcesclasspath:/META-INF/resources\n\n即可以直接通过&#39;[url]:[port]/**&#39; 来访问源代码 main/resources/ 目录下的 static 、public、resources 等文件夹下的静态文件。\n自定义静态资源映射规则使用配置类WebMvcConfigurer 接口新建一个 WebMvcConfig 配置类，实现 org.springframework.web.servlet.config.annotation.WebMvcConfigurer 接口，重写 addResourceHandlers 方法即可。\n12345678@Configurationpublic class WebMvcConfig implements WebMvcConfigurer &#123;    @Override    public void addResourceHandlers(ResourceHandlerRegistry registry) &#123;        // 将 /static/** 访问映射到 classpath:/mystatic/        registry.addResourceHandler(&quot;/static/**&quot;).addResourceLocations(&quot;classpath:/mystatic/&quot;);    &#125;&#125;\n\nWebMvcConfigurationSupport 类或者继承 org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport 类，重写 addResourceHandlers 方法，用法与上面一致。但该方法已经过时。\n1234567@Configurationpublic class WebMvcConfig extends WebMvcConfigurationSupport &#123;    @Override    protected void addResourceHandlers(ResourceHandlerRegistry registry) &#123;        registry.addResourceHandler(&quot;/static/**&quot;).addResourceLocations(&quot;classpath:/mystatic/&quot;);    &#125;\n\naddResourceHandlers 方法的参数是一个ResourceHandlerRegistry 类对象，该类用于保存服务静态资源图片、CSS 文件或者其他文件的资源处理器（resource handler）的注册信息，以通过 Spring MVC 提供静态资源。资源可以从 Web 应用程序根目录下的位置、类路径和其他位置提供。\n注意在重写 addResourceHandlers 方法时，需要在其内部调用 ResourceHandlerRegistry 类对象的 addResourceHandler 和 addResourceLocations 方法。填入被映射的 url 时不能漏掉 /** ，这个是用来代表该路径下的所有请求；填入映射的静态资源路径时不能漏掉最后的斜杠 /\n使用配置文件在 application.properties 中配置如下：\n1spring.mvc.static-path-pattern=classpath:/b/,classpath:/b/\n\n可以指定多个路径，之间用逗号隔开。\n使用这种方式特别要注意：自定义静态资源后，SpringBoot 默认的静态资源路径将不再起作用\n参考什么是静态内容和动态内容？ (aliyun.com)\nSpring Boot静态资源访问和配置全解析(看不懂你打我)_小洋人最happy的博客-CSDN博客_springboot静态资源映射\nSpringBoot中的五种对静态资源的映射规则 - 宜春 - 博客园 (cnblogs.com)\nSpring MVC : 概念模型 ResourceHandlerRegistry&#x2F;ResourceHandlerRegistration_安迪源文的博客-CSDN博客_resourcehandlerregistry作用\nResourceHandlerRegistry （Spring Framework 5.3.22 API）\nWebMvcConfigurer 与 WebMvcConfigurationSupport的坑 - codedot - 博客园 (cnblogs.com)\n","dateCreated":"2022-08-07T23:25:03+08:00","dateModified":"2022-09-18T20:20:02+08:00","datePublished":"2022-08-07T23:25:03+08:00","description":"\n\n简介\n静态内容（静态资源）：指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等。\n\n动态内容（动态资源）：指在不同请求中访问到的数据不相同的动态内容。例如：网站中的文件（asp、jsp、php、perl、cgi）、API接口、数据库交互请求等。\n\n","headline":"Springboot 静态资源映射","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/2464522539/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/2464522539/"}</script>
+    <meta name="description" content="简介 静态内容（静态资源）：指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等。  动态内容（动态资源）：指在不同请求中访问到的数据不相同的动态内容。例如：网站中的文件（asp、jsp、php、perl、cgi）、API接口、数据库交互请求等。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Springboot 静态资源映射">
+<meta property="og:url" content="https://beeyesana.github.io/posts/2464522539/index.html">
+<meta property="og:site_name" content="Eyesana&#39;s notes">
+<meta property="og:description" content="简介 静态内容（静态资源）：指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等。  动态内容（动态资源）：指在不同请求中访问到的数据不相同的动态内容。例如：网站中的文件（asp、jsp、php、perl、cgi）、API接口、数据库交互请求等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-07T15:25:03.000Z">
+<meta property="article:modified_time" content="2022-09-18T12:20:02.296Z">
+<meta property="article:author" content="Eyesana">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://beeyesana.github.io/assets/images/avatar.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-lezd4dfl72yb7za63iypiu14nmsvs9ion4gakbqiag9fydsqlhfn71azdulv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="5">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Eyesana&#39;s notes
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="5">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Eyesana</h4>
+                
+                    <h5 class="sidebar-profile-bio"></h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/BeEyesana"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://space.bilibili.com/2511182"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Bilibili"
+                        >
+                        <i class="sidebar-button-icon fab fa-bilibili" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Bilibili</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://leetcode.cn/u/eyesa/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LeetCode"
+                        >
+                        <i class="sidebar-button-icon " aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LeetCode</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="5"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Springboot 静态资源映射
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-07T23:25:03+08:00">
+	
+		    8月 07, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Spring/">Spring</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="toc-text">官方文档</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%BB%98%E8%AE%A4%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E6%98%A0%E5%B0%84%E8%A7%84%E5%88%99"><span class="toc-text">默认静态资源映射规则</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E6%98%A0%E5%B0%84%E8%A7%84%E5%88%99"><span class="toc-text">自定义静态资源映射规则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E7%B1%BB"><span class="toc-text">使用配置类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#WebMvcConfigurer-%E6%8E%A5%E5%8F%A3"><span class="toc-text">WebMvcConfigurer 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WebMvcConfigurationSupport-%E7%B1%BB"><span class="toc-text">WebMvcConfigurationSupport 类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">使用配置文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><ul>
+<li><p>静态内容（静态资源）：指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等。</p>
+</li>
+<li><p>动态内容（动态资源）：指在不同请求中访问到的数据不相同的动态内容。例如：网站中的文件（asp、jsp、php、perl、cgi）、API接口、数据库交互请求等。</p>
+</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h1><p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.servlet.spring-mvc.static-content">Web (spring.io)</a></p>
+<p>默认情况下，Spring Boot 从类路径中名为 <code>/static</code>（或 <code>/public</code> 或 <code>/resources</code> 或 <code>/META-INF/resources</code>）的目录或 <code>ServletContext </code> 的根目录中提供静态内容。它使用来自 Spring MVC 的 <code>ResourceHttpRequestHandler</code>，因此您可以通过添加自己的 <code>WebMvcConfigurer </code>并重写 <code>addResourceHandlers</code> 方法来修改该行为。</p>
+<p>在独立的 Web 应用程序中，容器中的默认 servlet 未启用。可以使用 <code>server.servlet.register-default-servlet</code> 属性启用它。</p>
+<p>默认 servlet 充当后备，如果 Spring 决定不处理它，则从 <code>ServletContext </code>的根提供内容。大多数时候，这不会发生（除非你修改了默认的 MVC 配置），因为 Spring 总是可以通过 <code>DispatcherServlet </code>处理请求。</p>
+<p>默认情况下，资源映射到 <code>/**</code>，但您可以使用 <code>spring.mvc.static-path-pattern</code> 属性对其进行调整。例如，将所有资源重定位到 <code>/resources/** </code>可以如下实现：</p>
+<ul>
+<li>yaml：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">	<span class="attr">mvc:</span></span><br><span class="line">		<span class="attr">static-path-pattern:</span> <span class="string">&quot;/resources/**&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>properties：</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring.mvc.static-path-pattern</span>=<span class="string">/resources/**</span></span><br></pre></td></tr></table></figure>
+
+<p>您还可以使用 <code>spring.web.resources.static-locations </code>属性自定义静态资源位置（用目录位置列表替换默认值）。 根 servlet 上下文路径 <code>“/”</code> 也会自动添加为位置。</p>
+<p>除了前面提到的“标准”静态资源位置之外，还为 Webjars 内容做了一个特殊情况。 任何具有 <code>/webjars/**</code> 路径的资源如果以 Webjars 格式打包，则从 jar 文件中提供。</p>
+<h1 id="默认静态资源映射规则"><a href="#默认静态资源映射规则" class="headerlink" title="默认静态资源映射规则"></a>默认静态资源映射规则</h1><p>SpringBoot 默认将 <code>&#39;url:port/**&#39;</code> 映射到以下目录。Spring Boot 默认会一依次从<code>static</code>、 <code>public</code>、<code>resources</code> 和 里面找是否存在相应的资源，如果有则直接返回。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">classpath:/static</span><br><span class="line">classpath:/public</span><br><span class="line">classpath:/resources</span><br><span class="line">classpath:/META-INF/resources</span><br></pre></td></tr></table></figure>
+
+<p>即可以直接通过<code>&#39;[url]:[port]/**&#39;</code> 来访问源代码 <code>main/resources/</code> 目录下的 <code>static</code> 、<code>public</code>、<code>resources</code> 等文件夹下的静态文件。</p>
+<h1 id="自定义静态资源映射规则"><a href="#自定义静态资源映射规则" class="headerlink" title="自定义静态资源映射规则"></a>自定义静态资源映射规则</h1><h2 id="使用配置类"><a href="#使用配置类" class="headerlink" title="使用配置类"></a>使用配置类</h2><h3 id="WebMvcConfigurer-接口"><a href="#WebMvcConfigurer-接口" class="headerlink" title="WebMvcConfigurer 接口"></a>WebMvcConfigurer 接口</h3><p>新建一个 WebMvcConfig 配置类，实现 <code>org.springframework.web.servlet.config.annotation.WebMvcConfigurer</code> 接口，重写 <code>addResourceHandlers</code> 方法即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> &#123;</span><br><span class="line">        <span class="comment">// 将 /static/** 访问映射到 classpath:/mystatic/</span></span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/static/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/mystatic/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="WebMvcConfigurationSupport-类"><a href="#WebMvcConfigurationSupport-类" class="headerlink" title="WebMvcConfigurationSupport 类"></a>WebMvcConfigurationSupport 类</h3><p>或者继承 <code>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport</code> 类，重写 <code>addResourceHandlers</code> 方法，用法与上面一致。但该方法已经过时。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfig</span> <span class="keyword">extends</span> <span class="title class_">WebMvcConfigurationSupport</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> &#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/static/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/mystatic/&quot;</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>addResourceHandlers</code> 方法的参数是一个<code>ResourceHandlerRegistry</code> 类对象，该类用于保存服务静态资源图片、CSS 文件或者其他文件的资源处理器（<code>resource handler</code>）的注册信息，以通过 Spring MVC 提供静态资源。资源可以从 Web 应用程序根目录下的位置、类路径和其他位置提供。</p>
+<p>注意在重写 <code>addResourceHandlers</code> 方法时，需要在其内部调用 <code>ResourceHandlerRegistry</code> 类对象的 <code>addResourceHandler</code> 和 <code>addResourceLocations</code> 方法。填入被映射的 url 时<strong>不能漏掉</strong> <code>/**</code> ，这个是用来代表该路径下的所有请求；填入映射的静态资源路径时<strong>不能漏掉最后的斜杠</strong> <code>/</code></p>
+<h2 id="使用配置文件"><a href="#使用配置文件" class="headerlink" title="使用配置文件"></a>使用配置文件</h2><p>在 <code>application.properties</code> 中配置如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring.mvc.static-path-pattern</span>=<span class="string">classpath:/b/,classpath:/b/</span></span><br></pre></td></tr></table></figure>
+
+<p>可以指定多个路径，之间用逗号隔开。</p>
+<p>使用这种方式特别要注意：<strong>自定义静态资源后，SpringBoot 默认的静态资源路径将不再起作用</strong></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/122276.html">什么是静态内容和动态内容？ (aliyun.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u010358168/article/details/81205116">Spring Boot静态资源访问和配置全解析(看不懂你打我)_小洋人最happy的博客-CSDN博客_springboot静态资源映射</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yichunguo/p/12115550.html">SpringBoot中的五种对静态资源的映射规则 - 宜春 - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/andy_zhang2007/article/details/89133798">Spring MVC : 概念模型 ResourceHandlerRegistry&#x2F;ResourceHandlerRegistration_安迪源文的博客-CSDN博客_resourcehandlerregistry作用</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/ResourceHandlerRegistry.html">ResourceHandlerRegistry （Spring Framework 5.3.22 API）</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/myitnews/p/12329126.html">WebMvcConfigurer 与 WebMvcConfigurationSupport的坑 - codedot - 博客园 (cnblogs.com)</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3916690307/"
+                    data-tooltip="SpringMVC 消息转换器"
+                    aria-label="上一篇: SpringMVC 消息转换器"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1706463495/"
+                    data-tooltip="Nginx"
+                    aria-label="下一篇: Nginx"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 Eyesana. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3916690307/"
+                    data-tooltip="SpringMVC 消息转换器"
+                    aria-label="上一篇: SpringMVC 消息转换器"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1706463495/"
+                    data-tooltip="Nginx"
+                    aria-label="下一篇: Nginx"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Eyesana</h4>
+        
+            <div id="about-card-bio"></div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-bvtwxu29a1tjks0lgljp6jzi21cgvsguhclbsyyftdvzl0xfannlswvg2old.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

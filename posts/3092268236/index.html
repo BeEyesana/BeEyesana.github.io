@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Eyesana&#39;s notes">
+    <title>MyBatisPlus 公共字段自动填充 - Eyesana&#39;s notes</title>
+    <meta name="author" content="Eyesana">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n简介实现步骤:\n\n在实体类的属性上加入 @TableField 注解，指定自动填充的策略 fill\n\n按照框架要求编写元数据对象处理器，在此类中统一为公共字段赋值，此类需要实现 com.baomidou.mybatisplus.core.handlers.MetaObjectHandler 接口\n\n\n\n\n\n\n注解 fill 取值\n\n\n值\n描述\n\n\n\nFieldFill.DEFAULT\n默认不处理\n\n\nFieldFill.INSERT\n插入时填充字段\n\n\nFieldFill.UPDATE\n更新时填充字段\n\n\nFieldFill.INSERT_UPDATE\n插入和更新时填充字段\n\n\n实现接口重写方法 insertFill 和 updateFill\n123456789101112131415161718192021222324252627@Slf4j@Componentpublic class MyMetaObjectHandler implements MetaObjectHandler &#123;    @Override    public void insertFill(MetaObject metaObject) &#123;        log.info(&quot;start insert fill ....&quot;);        this.strictInsertFill(metaObject, &quot;createTime&quot;, LocalDateTime.class, LocalDateTime.now()); // 起始版本 3.3.0(推荐使用)        // 或者        this.strictInsertFill(metaObject, &quot;createTime&quot;, () -&gt; LocalDateTime.now(), LocalDateTime.class); // 起始版本 3.3.3(推荐)        // 或者        this.fillStrategy(metaObject, &quot;createTime&quot;, LocalDateTime.now()); // 也可以使用(3.3.0 该方法有bug)        // 或者        metaObject.setValue(&quot;createTime&quot;, LocalDateTime.now());    &#125;    @Override    public void updateFill(MetaObject metaObject) &#123;        log.info(&quot;start update fill ....&quot;);        this.strictUpdateFill(metaObject, &quot;updateTime&quot;, LocalDateTime.class, LocalDateTime.now()); // 起始版本 3.3.0(推荐)        // 或者        this.strictUpdateFill(metaObject, &quot;updateTime&quot;, () -&gt; LocalDateTime.now(), LocalDateTime.class); // 起始版本 3.3.3(推荐)        // 或者        this.fillStrategy(metaObject, &quot;updateTime&quot;, LocalDateTime.now()); // 也可以使用(3.3.0 该方法有bug)    &#125;&#125;\n\n\n\nMetaObject 类里的 originalObject 属性所保存的就是当前对象\n注意事项注意事项：\n\n填充原理是直接给 entity 的属性设置值\n注解则是指定该属性在对应情况下必有值，如果无值则入库会是 null\nMetaObjectHandler 提供的默认方法的策略均为：如果属性有值则不覆盖，如果填充值为 null 则不填充\n字段必须声明 TableField 注解,属性 fill 选择对应策略，该声明告知 MybatisPlus 需要预留注入SQL字段\n填充处理器 MyMetaObjectHandler 在 SpringBoot 中需要声明 @Component 或 @Bean 注入\n\n参考自动填充功能 | MyBatis-Plus (baomidou.com)\n","dateCreated":"2022-08-07T23:29:19+08:00","dateModified":"2022-08-18T13:51:11+08:00","datePublished":"2022-08-07T23:29:19+08:00","description":"\n\n简介实现步骤:\n\n在实体类的属性上加入 @TableField 注解，指定自动填充的策略 fill\n\n按照框架要求编写元数据对象处理器，在此类中统一为公共字段赋值，此类需要实现 com.baomidou.mybatisplus.core.handlers.MetaObjectHandler 接口\n\n","headline":"MyBatisPlus 公共字段自动填充","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/3092268236/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/3092268236/","keywords":"MyBatis, MyBatisPlus"}</script>
+    <meta name="description" content="简介实现步骤:  在实体类的属性上加入 @TableField 注解，指定自动填充的策略 fill  按照框架要求编写元数据对象处理器，在此类中统一为公共字段赋值，此类需要实现 com.baomidou.mybatisplus.core.handlers.MetaObjectHandler 接口">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="MyBatisPlus 公共字段自动填充">
+<meta property="og:url" content="https://beeyesana.github.io/posts/3092268236/index.html">
+<meta property="og:site_name" content="Eyesana&#39;s notes">
+<meta property="og:description" content="简介实现步骤:  在实体类的属性上加入 @TableField 注解，指定自动填充的策略 fill  按照框架要求编写元数据对象处理器，在此类中统一为公共字段赋值，此类需要实现 com.baomidou.mybatisplus.core.handlers.MetaObjectHandler 接口">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-07T15:29:19.000Z">
+<meta property="article:modified_time" content="2022-08-18T05:51:11.335Z">
+<meta property="article:author" content="Eyesana">
+<meta property="article:tag" content="MyBatis">
+<meta property="article:tag" content="MyBatisPlus">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://beeyesana.github.io/assets/images/avatar.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-lezd4dfl72yb7za63iypiu14nmsvs9ion4gakbqiag9fydsqlhfn71azdulv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="5">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Eyesana&#39;s notes
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="5">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Eyesana</h4>
+                
+                    <h5 class="sidebar-profile-bio"></h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/BeEyesana"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://space.bilibili.com/2511182"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Bilibili"
+                        >
+                        <i class="sidebar-button-icon fab fa-bilibili" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Bilibili</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://leetcode.cn/u/eyesa/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LeetCode"
+                        >
+                        <i class="sidebar-button-icon " aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LeetCode</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="5"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            MyBatisPlus 公共字段自动填充
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-07T23:29:19+08:00">
+	
+		    8月 07, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E8%A7%A3-fill-%E5%8F%96%E5%80%BC"><span class="toc-text">注解 fill 取值</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3"><span class="toc-text">实现接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>实现步骤:</p>
+<ol>
+<li><p>在实体类的属性上加入 <code>@TableField</code> 注解，指定自动填充的策略 <code>fill</code></p>
+</li>
+<li><p>按照框架要求编写元数据对象处理器，在此类中统一为公共字段赋值，此类需要实现 <code>com.baomidou.mybatisplus.core.handlers.MetaObjectHandler</code> 接口</p>
+</li>
+</ol>
+<span id="more"></span>
+
+
+
+<h1 id="注解-fill-取值"><a href="#注解-fill-取值" class="headerlink" title="注解 fill 取值"></a>注解 fill 取值</h1><table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">FieldFill.DEFAULT</td>
+<td align="left">默认不处理</td>
+</tr>
+<tr>
+<td align="left">FieldFill.INSERT</td>
+<td align="left">插入时填充字段</td>
+</tr>
+<tr>
+<td align="left">FieldFill.UPDATE</td>
+<td align="left">更新时填充字段</td>
+</tr>
+<tr>
+<td align="left">FieldFill.INSERT_UPDATE</td>
+<td align="left">插入和更新时填充字段</td>
+</tr>
+</tbody></table>
+<h1 id="实现接口"><a href="#实现接口" class="headerlink" title="实现接口"></a>实现接口</h1><p>重写方法 <code>insertFill</code> 和 <code>updateFill</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyMetaObjectHandler</span> <span class="keyword">implements</span> <span class="title class_">MetaObjectHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insertFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;start insert fill ....&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.strictInsertFill(metaObject, <span class="string">&quot;createTime&quot;</span>, LocalDateTime.class, LocalDateTime.now()); <span class="comment">// 起始版本 3.3.0(推荐使用)</span></span><br><span class="line">        <span class="comment">// 或者</span></span><br><span class="line">        <span class="built_in">this</span>.strictInsertFill(metaObject, <span class="string">&quot;createTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class); <span class="comment">// 起始版本 3.3.3(推荐)</span></span><br><span class="line">        <span class="comment">// 或者</span></span><br><span class="line">        <span class="built_in">this</span>.fillStrategy(metaObject, <span class="string">&quot;createTime&quot;</span>, LocalDateTime.now()); <span class="comment">// 也可以使用(3.3.0 该方法有bug)</span></span><br><span class="line">        <span class="comment">// 或者</span></span><br><span class="line">        metaObject.setValue(<span class="string">&quot;createTime&quot;</span>, LocalDateTime.now());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;start update fill ....&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.strictUpdateFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, LocalDateTime.class, LocalDateTime.now()); <span class="comment">// 起始版本 3.3.0(推荐)</span></span><br><span class="line">        <span class="comment">// 或者</span></span><br><span class="line">        <span class="built_in">this</span>.strictUpdateFill(metaObject, <span class="string">&quot;updateTime&quot;</span>, () -&gt; LocalDateTime.now(), LocalDateTime.class); <span class="comment">// 起始版本 3.3.3(推荐)</span></span><br><span class="line">        <span class="comment">// 或者</span></span><br><span class="line">        <span class="built_in">this</span>.fillStrategy(metaObject, <span class="string">&quot;updateTime&quot;</span>, LocalDateTime.now()); <span class="comment">// 也可以使用(3.3.0 该方法有bug)</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>MetaObject</code> 类里的 <code>originalObject</code> 属性所保存的就是当前对象</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>注意事项：</p>
+<ul>
+<li>填充原理是直接给 <code>entity</code> 的属性设置值</li>
+<li>注解则是指定该属性在对应情况下必有值，如果无值则入库会是 <code>null</code></li>
+<li><code>MetaObjectHandler</code> 提供的默认方法的策略均为：如果属性有值则不覆盖，如果填充值为 <code>null</code> 则不填充</li>
+<li>字段必须声明 <code>TableField</code> 注解,属性 <code>fill</code> 选择对应策略，该声明告知 MybatisPlus 需要预留注入<code>SQL</code>字段</li>
+<li>填充处理器 <code>MyMetaObjectHandler</code> 在 SpringBoot 中需要声明 <code>@Component</code> 或 <code>@Bean</code> 注入</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://baomidou.com/pages/4c6bcf/">自动填充功能 | MyBatis-Plus (baomidou.com)</a></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/MyBatis/" rel="tag">MyBatis</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/MyBatisPlus/" rel="tag">MyBatisPlus</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1752722907/"
+                    data-tooltip="使用 ThreadLocal 类保存用户信息"
+                    aria-label="上一篇: 使用 ThreadLocal 类保存用户信息"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3508528482/"
+                    data-tooltip="Springboot 对象映射器"
+                    aria-label="下一篇: Springboot 对象映射器"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 Eyesana. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/1752722907/"
+                    data-tooltip="使用 ThreadLocal 类保存用户信息"
+                    aria-label="上一篇: 使用 ThreadLocal 类保存用户信息"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3508528482/"
+                    data-tooltip="Springboot 对象映射器"
+                    aria-label="下一篇: Springboot 对象映射器"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Eyesana</h4>
+        
+            <div id="about-card-bio"></div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-bvtwxu29a1tjks0lgljp6jzi21cgvsguhclbsyyftdvzl0xfannlswvg2old.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Eyesana&#39;s notes">
+    <title>使用 ThreadLocal 类保存用户信息 - Eyesana&#39;s notes</title>
+    <meta name="author" content="Eyesana">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n简介ThreadLocal 是一个关于创建线程局部变量的类。\nThreadLocal 并不是一个线程，而是线程的局部变量。当使用 ThreadLocal 维护变量时，ThreadLocal 为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。ThreadLocal 为每个线程提供单独一份存储空间，具有线程隔离的效果，只有在线程内才能获取到对应的值，线程外则不能访问。\n\n\nThreadLocal 常用方法:\npublic void set (T value)：设置当前线程的线程局部变量的值\npublic T get() ：返回当前线程所对应的线程局部变量的值\n\n保存用户信息原理对于客户端每次发送的 HTTP 请求，服务端都会对应分配一个新的线程来处理，在处理过程中涉及到调用链里的这些类中的方法都属于相同的一个线程：\n\nLoginCheckFilter 中的 doFilter 方法\nController 类中的写方法\nMyBatisPlus 的元数据对象处理器 MyMetaObjectHandler 中的 updateFill 方法\n\n可以在上面的三类方法中分别加入下面代码来获取当前线程id :\n12long id = Thread.currentThread().getId();log.info(&quot;线程id:&#123;&#125;&quot;, id);\n\n\n\n代码1234567891011121314/** * 基于 ThreadLocal 封装工具类，用户保存和获取当前登录用户的 id */public class BaseContext &#123;    private static ThreadLocal&lt;Long&gt; threadLocal = new ThreadLocal&lt;&gt;();    public static void setCurrentId(Long id) &#123;        threadLocal.set(id);    &#125;    public static Long getCurrentId() &#123;        return threadLocal.get();    &#125;&#125;\n\n\n\n使用方法每次请求都判断当前 session 中是否存在用户信息，如果存在用户信息就将用户信息保存到 ThreadLocal 中\n\n在鉴权后设置 id\n\n12345678910// 4-1、判断登录状态，如果已登录,则直接放行if (request.getSession().getAttribute(&quot;employee&quot;) != null) &#123;    log.info(&quot;用户已登录，用户 id 为 &#123;&#125;&quot;, request.getSession().getAttribute(&quot;employee&quot;));    Long empId = (Long) request.getSession().getAttribute(&quot;employee&quot;);    BaseContext.setCurrentId(empId);    filterChain.doFilter(request, response);    return;&#125;\n\n\n在自动填充公共字段时取出 id\n\n123456789101112@Overridepublic void insertFill(MetaObject metaObject) &#123;    log.info(&quot;公共字段填充[insert]...&quot;);    log.info(metaObject.toString());        metaObject.setValue(&quot;createTime&quot;, LocalDateTime.now());    metaObject.setValue(&quot;updateTime&quot;, LocalDateTime.now());    metaObject.setValue(&quot;createUser&quot;, BaseContext.getCurrentId());    metaObject.setValue(&quot;updateUser&quot;, BaseContext.getCurrentId());&#125;\n\n参考\n 用户登录信息保存在ThreadLocal中_青蛙与大鹅的博客-CSDN博客\n\n使用ThreadLocal保存用户登录信息_Mitsuha三葉的博客-CSDN博客\n\n\n","dateCreated":"2022-08-07T23:30:37+08:00","dateModified":"2022-09-18T20:19:05+08:00","datePublished":"2022-08-07T23:30:37+08:00","description":"\n\n简介ThreadLocal 是一个关于创建线程局部变量的类。\nThreadLocal 并不是一个线程，而是线程的局部变量。当使用 ThreadLocal 维护变量时，ThreadLocal 为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。ThreadLocal 为每个线程提供单独一份存储空间，具有线程隔离的效果，只有在线程内才能获取到对应的值，线程外则不能访问。","headline":"使用 ThreadLocal 类保存用户信息","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/1752722907/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/1752722907/","keywords":"session"}</script>
+    <meta name="description" content="简介ThreadLocal 是一个关于创建线程局部变量的类。 ThreadLocal 并不是一个线程，而是线程的局部变量。当使用 ThreadLocal 维护变量时，ThreadLocal 为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。ThreadLocal 为每个线程提供单独一份存储空间，具有线程隔离的效果，只有在线程内才">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="使用 ThreadLocal 类保存用户信息">
+<meta property="og:url" content="https://beeyesana.github.io/posts/1752722907/index.html">
+<meta property="og:site_name" content="Eyesana&#39;s notes">
+<meta property="og:description" content="简介ThreadLocal 是一个关于创建线程局部变量的类。 ThreadLocal 并不是一个线程，而是线程的局部变量。当使用 ThreadLocal 维护变量时，ThreadLocal 为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。ThreadLocal 为每个线程提供单独一份存储空间，具有线程隔离的效果，只有在线程内才">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-07T15:30:37.000Z">
+<meta property="article:modified_time" content="2022-09-18T12:19:05.968Z">
+<meta property="article:author" content="Eyesana">
+<meta property="article:tag" content="session">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://beeyesana.github.io/assets/images/avatar.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-lezd4dfl72yb7za63iypiu14nmsvs9ion4gakbqiag9fydsqlhfn71azdulv.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="5">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Eyesana&#39;s notes
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="5">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Eyesana</h4>
+                
+                    <h5 class="sidebar-profile-bio"></h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/BeEyesana"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://space.bilibili.com/2511182"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Bilibili"
+                        >
+                        <i class="sidebar-button-icon fab fa-bilibili" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Bilibili</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://leetcode.cn/u/eyesa/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LeetCode"
+                        >
+                        <i class="sidebar-button-icon " aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LeetCode</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="5"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            使用 ThreadLocal 类保存用户信息
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2022-08-07T23:30:37+08:00">
+	
+		    8月 07, 2022
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/%E5%85%B6%E4%BB%96/">其他</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ThreadLocal-%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">ThreadLocal 常用方法:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E5%8E%9F%E7%90%86"><span class="toc-text">保存用户信息原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">使用方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>ThreadLocal 是一个关于创建线程局部变量的类。</p>
+<p>ThreadLocal 并不是一个线程，而是线程的局部变量。当使用 ThreadLocal 维护变量时，ThreadLocal 为<strong>每个使用该变量的线程</strong>提供<strong>独立的变量副本</strong>，所以每一个线程都可以独立地改变自己的副本，而不会影响其它线程所对应的副本。<br>ThreadLocal 为每个线程提供单独一份存储空间，具有<strong>线程隔离</strong>的效果，只有在线程内才能获取到对应的值，线程外则不能访问。</p>
+<span id="more"></span>
+
+<h1 id="ThreadLocal-常用方法"><a href="#ThreadLocal-常用方法" class="headerlink" title="ThreadLocal 常用方法:"></a>ThreadLocal 常用方法:</h1><ul>
+<li><code>public void set (T value)</code>：设置当前线程的线程局部变量的值</li>
+<li><code>public T get() </code>：返回当前线程所对应的线程局部变量的值</li>
+</ul>
+<h1 id="保存用户信息原理"><a href="#保存用户信息原理" class="headerlink" title="保存用户信息原理"></a>保存用户信息原理</h1><p>对于客户端每次发送的 HTTP 请求，服务端都会对应分配一个新的线程来处理，在处理过程中涉及到调用链里的这些类中的方法都属于相同的一个线程：</p>
+<ol>
+<li><code>LoginCheckFilter</code> 中的 <code>doFilter</code> 方法</li>
+<li>Controller 类中的<strong>写方法</strong></li>
+<li>MyBatisPlus 的元数据对象处理器 <code>MyMetaObjectHandler</code> 中的 <code>updateFill </code>方法</li>
+</ol>
+<p>可以在上面的三类方法中分别加入下面代码来获取当前线程id :</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">long</span> <span class="variable">id</span> <span class="operator">=</span> Thread.currentThread().getId();</span><br><span class="line">log.info(<span class="string">&quot;线程id:&#123;&#125;&quot;</span>, id);</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 基于 ThreadLocal 封装工具类，用户保存和获取当前登录用户的 id</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BaseContext</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;Long&gt; threadLocal = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setCurrentId</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">        threadLocal.set(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Long <span class="title function_">getCurrentId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> threadLocal.get();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>每次请求都判断当前 session 中是否存在用户信息，如果存在用户信息就将用户信息保存到 ThreadLocal 中</p>
+<ol>
+<li>在鉴权后设置 id</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 4-1、判断登录状态，如果已登录,则直接放行</span></span><br><span class="line"><span class="keyword">if</span> (request.getSession().getAttribute(<span class="string">&quot;employee&quot;</span>) != <span class="literal">null</span>) &#123;</span><br><span class="line">    log.info(<span class="string">&quot;用户已登录，用户 id 为 &#123;&#125;&quot;</span>, request.getSession().getAttribute(<span class="string">&quot;employee&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="type">Long</span> <span class="variable">empId</span> <span class="operator">=</span> (Long) request.getSession().getAttribute(<span class="string">&quot;employee&quot;</span>);</span><br><span class="line">    BaseContext.setCurrentId(empId);</span><br><span class="line"></span><br><span class="line">    filterChain.doFilter(request, response);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在自动填充公共字段时取出 id</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insertFill</span><span class="params">(MetaObject metaObject)</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;公共字段填充[insert]...&quot;</span>);</span><br><span class="line">    log.info(metaObject.toString());</span><br><span class="line">    </span><br><span class="line">    metaObject.setValue(<span class="string">&quot;createTime&quot;</span>, LocalDateTime.now());</span><br><span class="line">    metaObject.setValue(<span class="string">&quot;updateTime&quot;</span>, LocalDateTime.now());</span><br><span class="line"></span><br><span class="line">    metaObject.setValue(<span class="string">&quot;createUser&quot;</span>, BaseContext.getCurrentId());</span><br><span class="line">    metaObject.setValue(<span class="string">&quot;updateUser&quot;</span>, BaseContext.getCurrentId());</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37034294/article/details/80819150"> 用户登录信息保存在ThreadLocal中_青蛙与大鹅的博客-CSDN博客</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42804736/article/details/115064701">使用ThreadLocal保存用户登录信息_Mitsuha三葉的博客-CSDN博客</a></p>
+</li>
+</ol>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/session/" rel="tag">session</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3682569925/"
+                    data-tooltip="Spring 配置类"
+                    aria-label="上一篇: Spring 配置类"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3092268236/"
+                    data-tooltip="MyBatisPlus 公共字段自动填充"
+                    aria-label="下一篇: MyBatisPlus 公共字段自动填充"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2022 Eyesana. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3682569925/"
+                    data-tooltip="Spring 配置类"
+                    aria-label="上一篇: Spring 配置类"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/3092268236/"
+                    data-tooltip="MyBatisPlus 公共字段自动填充"
+                    aria-label="下一篇: MyBatisPlus 公共字段自动填充"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Eyesana</h4>
+        
+            <div id="about-card-bio"></div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-bvtwxu29a1tjks0lgljp6jzi21cgvsguhclbsyyftdvzl0xfannlswvg2old.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

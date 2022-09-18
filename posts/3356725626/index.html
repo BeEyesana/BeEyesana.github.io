@@ -11,7 +11,7 @@
     
     
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n\n\n简介主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。\n\n\nMySql 复制过程分成三步\n\nmaster 将改变写入到二进制日志（binary log）\nslave 将 master 的 binary log 拷贝到它的中继日志（relay log）\nslave 重做中继日志中的事件，将改变应用到自己的数据库中\n\n配置MySQL 配置修改MySql数据库的配置文件\nWindows 系统下为 MySQL安装根目录下的 my.ini 文件，Linux 下为系统根目录下的 \\etc\\my.cnf 文件\n\nCentOS 7 安装 MySQL 参考：\n\nCentOS 7上安装MySQL 8.0 - SegmentFault 思否\nThe GPG keys listed for the “MySQL 8.0 Community Server” repository are already installed but they are not correct | Mariusz Antonik\n\n\n配置主库\n1234[mysqld]log-bin=mysql-bin #启用二进制日志[必须]server-id=100 #服务器唯一ID[必须]\n\n配置从库\n123[mysqld]server-id=101 #服务器唯一ID[必须]\n\n\n\n创建用户并授权12create user &#x27;user1&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;123456&#x27;;GRANT REPLICATION SLAVE ON *.* to user1;\n\n\n\n主库查看状态1show master status;\n\n记录下结果中主库的 File 和 Position 的值，如 mysql-bin.000084 和 6597\n执行完后不要再对主库做任何操作，避免系统改动\n从库配置主库123change master to master_host=&#x27;....&#x27;，master_user=&#x27;user1&#x27;，master_password=&#x27;123456&#x27;，master_log_file=&#x27;....&#x27;,master_log_pos=...;start slave;\n\n查看从库状态1show slave status\\G;\n\n读写分离Sharding-JDBC 介绍Sharding-JDBC 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。它使用客户端直连数据库，以jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。\n使用Sharding-JDBC可以在程序中轻松的实现数据库读写分离。\n\n适用于任何基于JDBC的ORM框架，如：JPA，Hibernate，Mybatis，Spring JDBC Template 或直接使用JDBC。\n支持任何第三方的数据库连接池，如：DBCP，C3P0，BoneCP，Druid，HikariCP 等。\n支持任意实现JDBC规范的数据库。目前支持 MySQL，Oracle，SQLServer，PostgreSQL 以及任何遵循 SQL92 标准的数据库。\n\n配置12345&lt;dependency&gt;    &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;    &lt;artifactId&gt;sharding-jdbc=spring-boot-starter&lt;/artifactId&gt;    &lt;version&gt;4.0.0-RC1&lt;/version&gt;&lt;/dependency&gt;\n\n123456789101112131415161718192021222324252627282930313233spring:  shardingsphere:    datasource:      names:        master,slave      # 主数据源      master:        type: com.alibaba.druid.pool.DruidDataSource        driver-class-name: com.mysql.cj.jdbc.Driver        url: jdbc:mysql://ip1:3306/database?characterEncoding=utf-8 #useSSL=false        username: root        password: 123456      # 从数据源      slave:        type: com.alibaba.druid.pool.DruidDataSource        driver-class-name: com.mysql.cj.jdbc.Driver        url: jdbc:mysql://ip2:3306/database?characterEncoding=utf-8 #useSSL=false        username: root        password: 123456    masterslave:      # 读写分离配置      load-balance-algorithm-type: round_robin      # 最终的数据源名称      name: dataSource      # 主库数据源名称      master-data-source-name: master      # 从库数据源名称列表，多个逗号分隔      slave-data-source-names: slave    props:      sql:        show: true #开启SQL显示，默认false  main:    allow-bean-definition-overriding: true\n\nload-balance-algorithm-type 从库负载均衡的策略\nallow-bean-definition-overriding 设为 true 是因为 sharding 也会创建一个 DataSource 对象，会和 druid 的冲突，所以需要覆盖。\n参考windows实现MySQL主从复制 - liluxiang - 博客园 (cnblogs.com)\nwindows10 mysql主从复制配置 - 靠自己 - 博客园 (cnblogs.com)\n","dateCreated":"2022-07-31T23:27:42+08:00","dateModified":"2022-07-31T23:29:28+08:00","datePublished":"2022-07-31T23:27:42+08:00","description":"\n\n\n\n简介主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。","headline":"MySQL主从复制","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/3356725626/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/3356725626/","keywords":"数据库, MySQL"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg"},"articleBody":"\n\n\n\n简介主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。\n\n\nMySQL 复制过程分成三步\n\nmaster 将改变写入到二进制日志（binary log）\nslave 将 master 的 binary log 拷贝到它的中继日志（relay log）\nslave 重做中继日志中的事件，将改变应用到自己的数据库中\n\n配置MySQL 配置修改 MySQL 数据库的配置文件\nWindows 系统下为 MySQL安装根目录下的 my.ini 文件，Linux 下为系统根目录下的 \\etc\\my.cnf 文件\n\nCentOS 7 安装 MySQL 参考：\n\nCentOS 7上安装MySQL 8.0 - SegmentFault 思否\nThe GPG keys listed for the “MySQL 8.0 Community Server” repository are already installed but they are not correct | Mariusz Antonik\n\n\n配置主库\n1234[mysqld]log-bin=mysql-bin #启用二进制日志[必须]server-id=100 #服务器唯一ID[必须]\n\n配置从库\n123[mysqld]server-id=101 #服务器唯一ID[必须]\n\n\n\n创建用户并授权12create user &#x27;user1&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;123456&#x27;;GRANT REPLICATION SLAVE ON *.* to user1;\n\n\n\n主库查看状态1show master status;\n\n记录下结果中主库的 File 和 Position 的值，如 mysql-bin.000084 和 6597\n执行完后不要再对主库做任何操作，避免系统改动\n从库配置主库123change master to master_host=&#x27;....&#x27;, master_user=&#x27;user1&#x27;, master_password=&#x27;123456&#x27;, master_log_file=&#x27;....&#x27;, master_log_pos=...;start slave;\n\n查看从库状态1show slave status\\G;\n\n读写分离Sharding-JDBC 介绍Sharding-JDBC 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。它使用客户端直连数据库，以jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。\n使用Sharding-JDBC可以在程序中轻松的实现数据库读写分离。\n\n适用于任何基于JDBC的ORM框架，如：JPA，Hibernate，Mybatis，Spring JDBC Template 或直接使用JDBC。\n支持任何第三方的数据库连接池，如：DBCP，C3P0，BoneCP，Druid，HikariCP 等。\n支持任意实现JDBC规范的数据库。目前支持 MySQL，Oracle，SQLServer，PostgreSQL 以及任何遵循 SQL92 标准的数据库。\n\n配置12345&lt;dependency&gt;    &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;    &lt;artifactId&gt;sharding-jdbc=spring-boot-starter&lt;/artifactId&gt;    &lt;version&gt;4.0.0-RC1&lt;/version&gt;&lt;/dependency&gt;\n\n123456789101112131415161718192021222324252627282930313233spring:  shardingsphere:    datasource:      names:        master,slave      # 主数据源      master:        type: com.alibaba.druid.pool.DruidDataSource        driver-class-name: com.mysql.cj.jdbc.Driver        url: jdbc:mysql://ip1:3306/database?characterEncoding=utf-8 #useSSL=false        username: root        password: 123456      # 从数据源      slave:        type: com.alibaba.druid.pool.DruidDataSource        driver-class-name: com.mysql.cj.jdbc.Driver        url: jdbc:mysql://ip2:3306/database?characterEncoding=utf-8 #useSSL=false        username: root        password: 123456    masterslave:      # 读写分离配置      load-balance-algorithm-type: round_robin      # 最终的数据源名称      name: dataSource      # 主库数据源名称      master-data-source-name: master      # 从库数据源名称列表，多个逗号分隔      slave-data-source-names: slave    props:      sql:        show: true #开启SQL显示，默认false  main:    allow-bean-definition-overriding: true\n\nload-balance-algorithm-type 从库负载均衡的策略\nallow-bean-definition-overriding 设为 true 是因为 sharding 也会创建一个 DataSource 对象，会和 druid 的冲突，所以需要覆盖。\n参考windows实现MySQL主从复制 - liluxiang - 博客园 (cnblogs.com)\nwindows10 mysql主从复制配置 - 靠自己 - 博客园 (cnblogs.com)\n","dateCreated":"2022-07-31T23:27:42+08:00","dateModified":"2022-08-06T23:26:36+08:00","datePublished":"2022-07-31T23:27:42+08:00","description":"\n\n\n\n简介主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。","headline":"MySQL主从复制","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://beeyesana.github.io/posts/3356725626/"},"publisher":{"@type":"Organization","name":"Eyesana","sameAs":["https://github.com/BeEyesana","https://space.bilibili.com/2511182","https://leetcode.cn/u/eyesa/"],"image":"avatar.jpg","logo":{"@type":"ImageObject","url":"avatar.jpg"}},"url":"https://beeyesana.github.io/posts/3356725626/","keywords":"数据库, MySQL"}</script>
     <meta name="description" content="简介主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="MySQL主从复制">
@@ -20,7 +20,7 @@
 <meta property="og:description" content="简介主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-07-31T15:27:42.000Z">
-<meta property="article:modified_time" content="2022-07-31T15:29:28.445Z">
+<meta property="article:modified_time" content="2022-08-06T15:26:36.118Z">
 <meta property="article:author" content="Eyesana">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="MySQL">
@@ -283,13 +283,13 @@
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>主从复制是指一台服务器充当主数据库服务器，另一台或多台服务器充当从数据库服务器，主服务器中的数据自动复制到从服务器之中。对于多级复制，数据库服务器即可充当主机，也可充当从机。MySQL 主从复制是MySQL 数据库自带功能，无需借助第三方工具。</p>
 <span id="more"></span>
 
-<p>MySql 复制过程分成三步</p>
+<p>MySQL 复制过程分成三步</p>
 <ul>
 <li>master 将改变写入到二进制日志（binary log）</li>
 <li>slave 将 master 的 binary log 拷贝到它的中继日志（relay log）</li>
 <li>slave 重做中继日志中的事件，将改变应用到自己的数据库中</li>
 </ul>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="MySQL-配置"><a href="#MySQL-配置" class="headerlink" title="MySQL 配置"></a>MySQL 配置</h2><p>修改MySql数据库的配置文件</p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="MySQL-配置"><a href="#MySQL-配置" class="headerlink" title="MySQL 配置"></a>MySQL 配置</h2><p>修改 MySQL 数据库的配置文件</p>
 <p>Windows 系统下为 MySQL安装根目录下的 <code>my.ini</code> 文件，Linux 下为系统根目录下的 <code>\etc\my.cnf</code> 文件</p>
 <blockquote>
 <p>CentOS 7 安装 MySQL 参考：</p>
@@ -314,7 +314,7 @@
 
 <p>记录下结果中主库的 <code>File</code> 和 <code>Position</code> 的值，如 <code>mysql-bin.000084</code> 和 <code>6597</code></p>
 <p>执行完后不要再对主库做任何操作，避免系统改动</p>
-<h2 id="从库配置主库"><a href="#从库配置主库" class="headerlink" title="从库配置主库"></a>从库配置主库</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">change master <span class="keyword">to</span> master_host<span class="operator">=</span><span class="string">&#x27;....&#x27;</span>，master_user<span class="operator">=</span><span class="string">&#x27;user1&#x27;</span>，master_password<span class="operator">=</span><span class="string">&#x27;123456&#x27;</span>，master_log_file<span class="operator">=</span><span class="string">&#x27;....&#x27;</span>,master_log_pos<span class="operator">=</span>...;</span><br><span class="line"></span><br><span class="line"><span class="keyword">start</span> slave;</span><br></pre></td></tr></table></figure>
+<h2 id="从库配置主库"><a href="#从库配置主库" class="headerlink" title="从库配置主库"></a>从库配置主库</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">change master <span class="keyword">to</span> master_host<span class="operator">=</span><span class="string">&#x27;....&#x27;</span>, master_user<span class="operator">=</span><span class="string">&#x27;user1&#x27;</span>, master_password<span class="operator">=</span><span class="string">&#x27;123456&#x27;</span>, master_log_file<span class="operator">=</span><span class="string">&#x27;....&#x27;</span>, master_log_pos<span class="operator">=</span>...;</span><br><span class="line"></span><br><span class="line"><span class="keyword">start</span> slave;</span><br></pre></td></tr></table></figure>
 
 <h2 id="查看从库状态"><a href="#查看从库状态" class="headerlink" title="查看从库状态"></a>查看从库状态</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> slave status\G;</span><br></pre></td></tr></table></figure>
 
@@ -354,11 +354,14 @@
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a
-                        class="post-action-btn btn btn--disabled"
-                        aria-hidden="true"
-                    >
-                        
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/236125151/"
+                    data-tooltip="一些MySQL命令"
+                    aria-label="上一篇: 一些MySQL命令"
+                >
+                    
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
                         <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
                     </a>
@@ -384,7 +387,7 @@
             <a
                 class="post-action-btn btn btn--default btn-open-shareoptions"
                 href="#btn-open-shareoptions"
-                aria-label="Share this post"
+                aria-label="Diesen Beitrag teilen"
             >
                 <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
@@ -427,11 +430,14 @@
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a
-                        class="post-action-btn btn btn--disabled"
-                        aria-hidden="true"
-                    >
-                        
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/posts/236125151/"
+                    data-tooltip="一些MySQL命令"
+                    aria-label="上一篇: 一些MySQL命令"
+                >
+                    
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
                         <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
                     </a>
@@ -457,7 +463,7 @@
             <a
                 class="post-action-btn btn btn--default btn-open-shareoptions"
                 href="#btn-open-shareoptions"
-                aria-label="Share this post"
+                aria-label="Diesen Beitrag teilen"
             >
                 <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
